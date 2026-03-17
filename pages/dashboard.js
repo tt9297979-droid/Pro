@@ -1,32 +1,33 @@
 import { useEffect, useState } from 'react'
+import Chart from '../components/Chart'
+import SignalBox from '../components/SignalBox'
+import LiquidityMap from '../components/LiquidityMap'
 
 export default function Dashboard(){
 
-  const [signal,setSignal] = useState(null)
+  const [data,setData] = useState(null)
 
-  async function loadSignal(){
-    let r = await fetch('/api/getSignal')
+  async function load(){
+    let r = await fetch('/api/signal')
     let d = await r.json()
-    setSignal(d)
+    setData(d)
   }
 
   useEffect(()=>{
-    loadSignal()
-    setInterval(loadSignal, 300000) // 5 นาที
+    load()
+    setInterval(load, 300000) // 5 นาที
   },[])
 
-  if(!signal) return <p>Loading...</p>
+  if(!data) return <p>Loading...</p>
 
   return(
     <div className="container">
 
-      <div className="card">
-        <h2>📊 AI SIGNAL</h2>
-        <p>Signal: {signal.signal}</p>
-        <p>Entry: {signal.entry}</p>
-        <p>TP: {signal.tp}</p>
-        <p>SL: {signal.sl}</p>
-      </div>
+      <Chart/>
+
+      <SignalBox data={data}/>
+
+      <LiquidityMap zones={data.liquidity}/>
 
     </div>
   )
